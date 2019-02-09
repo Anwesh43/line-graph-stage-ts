@@ -7,7 +7,8 @@ const strokeFactor : number = 60
 const lineColor : string = "#4CAF50"
 const backColor : string = "#212121"
 const data : Array<number> = [10, 20, 30, 5, 15, 60, 35, 25]
-const rFactor : number = 6
+const rFactor : number = 35
+const delay = 20
 
 const initStyle : Function = (context : CanvasRenderingContext2D) => {
     context.strokeStyle = lineColor
@@ -38,7 +39,7 @@ class DimensionUtil {
         this.gap = size / (data.length + 1)
         this.hSize = h / 2
         this.x = midX - size / 2
-        this.r = this.gap / rFactor
+        this.r = Math.min(w, h) / rFactor
     }
 
     getDimensions() : Object {
@@ -214,7 +215,7 @@ class Animator {
     start(cb : Function) {
         if (!this.animated) {
             this.animated = true
-            this.interval = setInterval(cb, 50)
+            this.interval = setInterval(cb, delay)
         }
     }
 
