@@ -149,3 +149,45 @@ const drawJoinNode : Function = (context : CanvasRenderingContext2D, i : number,
     const jp2 : JoinPoint = JoinPoint.createFromI(i)
     jp1.drawPoint(context, jp2, scale)
 }
+
+class State {
+    scale : number = 0
+    dir : number = 0
+    prevScale : number = 0
+    next : State
+    prev : State
+
+    addNext() {
+        this.next = new State()
+        this.next.prev = this
+    }
+
+    update(nextcb : Function, cb : Function) {
+        this.scale += updateValue(this.scale, this.dir, 1, 1)
+        if (Math.abs(this.scale - this.prevScale) > 1) {
+            this.scale = this.prevScale + this.dir
+            this.dir = 0
+            this.prevScale = this.scale
+            if (this.prevScale == 1 && this.next) {
+                this.next.startUpdating(() => {
+                    nextcb(this.next)
+                })
+
+            } if (this.prevScale == -1 && this.prev) {
+                this.prev.startUpdating(() => {
+                    nextcb(this.prev)
+                })
+
+            } else {
+                cb()
+            }
+        }
+    }
+
+    startUpdating(cb : Function) {
+        if (this.dir == 0) {
+            this.dir = 1 - 2 * this.prevScale
+            cb()
+        }
+    }
+}
