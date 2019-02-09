@@ -7,7 +7,7 @@ const strokeFactor : number = 60
 const lineColor : string = "#4CAF50"
 const backColor : string = "#212121"
 const data : Array<number> = [10, 20, 30, 5, 15, 60, 35, 25]
-const rFactor : number = 5
+const rFactor : number = 6
 
 const initStyle : Function = (context : CanvasRenderingContext2D) => {
     context.strokeStyle = lineColor
@@ -35,10 +35,10 @@ class DimensionUtil {
         const dataSorted = [...data].sort()
         this.yPointMax = dataSorted.pop()
         this.y = 2 * h / 3
-        const gap = size / (data.length + 1)
+        this.gap = size / (data.length + 1)
         this.hSize = h / 2
         this.x = midX - size / 2
-        this.r = gap / sizeFactor
+        this.r = this.gap / rFactor
     }
 
     getDimensions() : Object {
@@ -107,9 +107,13 @@ const drawCircle : Function = (context : CanvasRenderingContext2D, r : number) =
 const drawLGNode : Function = (context : CanvasRenderingContext2D, i : number, scale : number) => {
     const sc1 : number = divideScale(scale, 0, 2)
     const sc2 : number = divideScale(scale, 1, 2)
+    //console.log(`${sc1} ${sc2}`)
     const h : number = dimensionUtil.getHGraph(i)
     context.save()
     context.translate(dimensionUtil.getX(i), dimensionUtil.getY())
+    if (scale > 0 && scale < 1) {
+        console.log(`${dimensionUtil.getX(i)}, ${dimensionUtil.getY()}, ${dimensionUtil.getRadius()}, ${dimensionUtil.getHGraph(i)}`)
+    }
     drawVerticalLine(context, h * sc1)
     context.save()
     context.translate(0, -h)
@@ -171,6 +175,7 @@ class State {
 
     update(nextcb : Function, cb : Function) {
         this.scale += updateValue(this.scale, this.dir, 1, 1)
+        //console.log(this.scale)
         if (Math.abs(this.scale - this.prevScale) > 1) {
             this.scale = this.prevScale + this.dir
             this.dir = 0
@@ -180,7 +185,7 @@ class State {
                     nextcb(this.next)
                 })
 
-            } if (this.prevScale == -1 && this.prev) {
+            } else if (this.prevScale === -1 && this.prev) {
                 this.prev.startUpdating(() => {
                     nextcb(this.prev)
                 })
@@ -258,9 +263,10 @@ class LGNode {
     state : State = new State()
     curr : State = this.state
     constructor(private i : number) {
-        this.state.addNext()
         this.addNeighbor()
-
+        if (this.i !== 0) {
+            this.state.addNext()
+        }
     }
 
     addNeighbor() {
@@ -272,8 +278,8 @@ class LGNode {
 
     draw(context : CanvasRenderingContext2D) {
         drawLGNode(context, this.i, this.state.scale)
-        if (this.prev) {
-            drawJoinNode(context, this.i, this.state.scale)
+        if (this.prev && this.state.next) {
+            drawJoinNode(context, this.i, this.state.next.scale)
         }
         if (this.next) {
             this.next.draw(context)
@@ -283,6 +289,7 @@ class LGNode {
     update(cb : Function) {
         this.curr.update((state) => {
             this.curr = state
+            console.log(this.curr)
         },cb)
     }
 
