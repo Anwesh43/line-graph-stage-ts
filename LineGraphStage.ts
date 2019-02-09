@@ -240,3 +240,54 @@ class LineGraphStage {
         stage.handleTap()
     }
 }
+
+class LGNode {
+    prev : LGNode
+    next : LGNode
+    state : State = new State()
+    curr : State = this.state
+    constructor(private i : number) {
+        this.state.addNext()
+        this.addNeighbor()
+
+    }
+
+    addNeighbor() {
+        if (this.i < data.length - 1) {
+            this.next = new LGNode(this.i + 1)
+            this.next.prev = this
+        }
+    }
+
+    draw(context : CanvasRenderingContext2D) {
+        drawLGNode(context, this.i, this.state.scale)
+        if (this.prev) {
+            drawJoinNode(context, this.i, this.state.scale)
+        }
+        if (this.next) {
+            this.next.draw(context)
+        }
+    }
+
+    update(cb : Function) {
+        this.curr.update((state) => {
+            this.curr = state
+        },cb)
+    }
+
+    startUpdating(cb : Function) {
+        this.curr.startUpdating(cb)
+    }
+
+    getNext(dir : number, cb : Function) : LGNode {
+        var curr = this.prev
+        if (dir == 1) {
+            curr = this.next
+        }
+        if (curr != null) {
+            return curr
+        }
+        cb()
+        return this
+    }
+}
