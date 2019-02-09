@@ -291,3 +291,26 @@ class LGNode {
         return this
     }
 }
+
+class LineGraph {
+    root : LGNode = new LGNode(0)
+    curr : LGNode = this.root
+    dir : number = 1
+
+    drawLGNode(context : CanvasRenderingContext2D) {
+        this.root.draw(context)
+    }
+
+    update(cb : Function) {
+        this.curr.update(() => {
+            this.curr = this.curr.getNext(this.dir, () => {
+                this.dir *= -1
+            })
+            cb()
+        })
+    }
+
+    startUpdating(cb) {
+        this.curr.startUpdating(cb)
+    }
+}
