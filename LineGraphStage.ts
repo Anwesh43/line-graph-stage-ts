@@ -297,7 +297,7 @@ class LineGraph {
     curr : LGNode = this.root
     dir : number = 1
 
-    drawLGNode(context : CanvasRenderingContext2D) {
+    draw(context : CanvasRenderingContext2D) {
         this.root.draw(context)
     }
 
@@ -312,5 +312,26 @@ class LineGraph {
 
     startUpdating(cb) {
         this.curr.startUpdating(cb)
+    }
+}
+
+class Renderer {
+    animator : Animator = new Animator()
+    lg : LineGraph = new LineGraph()
+
+    render(context : CanvasRenderingContext2D) {
+        this.lg.draw(context)
+    }
+
+    handleTap(cb : Function) {
+        this.lg.startUpdating(() => {
+            this.animator.start(() => {
+                cb()
+                this.lg.update(() => {
+                    this.animator.stop()
+                    cb()
+                })
+            })
+        })
     }
 }
