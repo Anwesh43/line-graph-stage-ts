@@ -1,0 +1,9 @@
+const w : number = window.innerWidth
+const h : number = window.innerHeight
+const scGap : number = 0.05
+const scDiv : number = 0.51
+const sizeFactor : number = 4
+const strokeFactor : number = 60
+const lineColor : string = "#4CAF50"
+const backColor : string = "#212121"
+const data : Array<number> = [10, 20, 30, 5, 15, 60, 35, 25]
