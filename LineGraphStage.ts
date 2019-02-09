@@ -144,11 +144,13 @@ class JoinPoint {
     }
 
     drawPoint(context : CanvasRenderingContext2D, jp : JoinPoint, sc : number) {
-        const updatePoint = this.updateToPoint(jp, sc)
-        context.beginPath()
-        context.moveTo(this.x, this.y)
-        context.lineTo(updatePoint.x, updatePoint.y)
-        context.stroke()
+        if (sc !== 0) {
+            const updatePoint = this.updateToPoint(jp, sc)
+            context.beginPath()
+            context.moveTo(this.x, this.y)
+            context.lineTo(updatePoint.x, updatePoint.y)
+            context.stroke()
+        }
     }
 
     static createFromI(i : number) : JoinPoint {
@@ -180,12 +182,13 @@ class State {
             this.scale = this.prevScale + this.dir
             this.dir = 0
             this.prevScale = this.scale
-            if (this.prevScale == 1 && this.next) {
+            console.log(`${this.prevScale} ${this.prev}`)
+            if (this.prevScale === 1 && this.next) {
                 this.next.startUpdating(() => {
                     nextcb(this.next)
                 })
 
-            } else if (this.prevScale === -1 && this.prev) {
+            } else if (this.prevScale === 0 && this.prev) {
                 this.prev.startUpdating(() => {
                     nextcb(this.prev)
                 })
