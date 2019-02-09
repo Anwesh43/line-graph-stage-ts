@@ -9,6 +9,13 @@ const backColor : string = "#212121"
 const data : Array<number> = [10, 20, 30, 5, 15, 60, 35, 25]
 const rFactor : number = 5
 
+const initStyle : Function = (context : CanvasRenderingContext2D) => {
+    context.strokeStyle = lineColor
+    context.fillStyle = lineColor
+    context.lineWidth = Math.min(w, h) / strokeFactor
+    context.lineCap = 'round'
+}
+
 class DimensionUtil {
     x : number
     yPointMax : number
@@ -324,6 +331,7 @@ class Renderer {
     lg : LineGraph = new LineGraph()
 
     render(context : CanvasRenderingContext2D) {
+        initStyle(context)
         this.lg.draw(context)
     }
 
