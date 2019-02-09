@@ -110,3 +110,42 @@ const drawLGNode : Function = (context : CanvasRenderingContext2D, i : number, s
     context.restore()
     context.restore()
 }
+
+class JoinPoint {
+    constructor(public x : number, public y : number) {
+
+    }
+
+    updateToPoint(jp : JoinPoint, sc : number) : JoinPoint {
+        return this.subPoint(jp).mulPoint(sc).addPoint(this)
+    }
+
+    mulPoint(a : number) : JoinPoint {
+        return new JoinPoint(this.x * a, this.y * a)
+    }
+
+    addPoint(jp : JoinPoint) : JoinPoint {
+        return new JoinPoint(this.x + jp.x, this.y + jp.y)
+    }
+
+    subPoint(jp : JoinPoint) : JoinPoint {
+        return new JoinPoint(jp.x - this.x, jp.y - this.y)
+    }
+
+    drawPoint(context : CanvasRenderingContext2D, jp : JoinPoint, sc : number) {
+        const updatePoint = this.updateToPoint(jp, sc)
+        context.beginPath()
+        context.moveTo(this.x, this.y)
+        context.lineTo(updatePoint.x, updatePoint.y)
+        context.stroke()
+    }
+
+    static createFromI(i : number) : JoinPoint {
+        return new JoinPoint(dimensionUtil.getX(i), dimensionUtil.getY() - dimensionUtil.getHGraph(i))
+    }
+}
+const drawJoinNode : Function = (context : CanvasRenderingContext2D, i : number, scale : number) => {
+    const jp1 : JoinPoint = JoinPoint.createFromI(i - 1)
+    const jp2 : JoinPoint = JoinPoint.createFromI(i)
+    jp1.drawPoint(context, jp2, scale)
+}
